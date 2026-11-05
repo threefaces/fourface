@@ -1,0 +1,12 @@
+import { mkdir,writeFile } from 'node:fs/promises';
+await mkdir('public/images',{recursive:true});
+const photos={ hero:'1547573854-74d2a71d0826',lunch:'1547592180-85f173990554',salad:'1512621776951-a57141f2eefd',noodles:'1569718212165-3a8278d5f624',dinner:'1546069901-ba9599a7e63c' };
+await Promise.all(Object.entries(photos).map(async ([name,id])=>{ const response=await fetch(`https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${name==='hero'?1400:900}&q=85`);if(!response.ok) throw new Error(`${name}: ${response.status}`);await writeFile(`public/images/${name}.jpg`,Buffer.from(await response.arrayBuffer()));console.log(`Saved ${name}`); }));
+await mkdir('public/fonts',{recursive:true});
+const font=await fetch('https://raw.githubusercontent.com/orioncactus/pretendard/main/packages/pretendard/dist/web/variable/woff2/PretendardVariable.woff2');
+if(!font.ok) throw new Error(`Font: ${font.status}`);
+await writeFile('public/fonts/PretendardVariable.woff2',Buffer.from(await font.arrayBuffer()));
+const license=await fetch('https://raw.githubusercontent.com/orioncactus/pretendard/main/LICENSE');
+if(!license.ok) throw new Error(`Font license: ${license.status}`);
+await writeFile('public/fonts/LICENSE.txt',await license.text());
+console.log('Saved Pretendard and OFL license');
